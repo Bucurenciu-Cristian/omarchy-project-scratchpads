@@ -12,6 +12,6 @@ pkgbase = omarchy-project-scratchpads
 	optdepends = fd: faster directory browsing in project picker
 	optdepends = walker: GUI picker interface (omarchy default launcher)
 	source = omarchy-project-scratchpads-1.0.0.tar.gz::https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads/archive/v1.0.0.tar.gz
-	sha256sums = SKIP
+	sha256sums = e07e12b85e048c46652f3a77e8d34fbe2fd9c4cec991f4c0caa8f48d46bf8a74
 
 pkgname = omarchy-project-scratchpads
