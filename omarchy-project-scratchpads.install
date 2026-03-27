@@ -1,0 +1,25 @@
+post_install() {
+  echo ""
+  echo "==> omarchy-project-scratchpads installed!"
+  echo ""
+  echo "  Run the setup script to configure keybindings and state:"
+  echo "    omarchy-install-project-scratchpads"
+  echo ""
+  echo "  Example config is at:"
+  echo "    /usr/share/omarchy-project-scratchpads/projects.conf.example"
+  echo ""
+  echo "  To uninstall keybindings and state:"
+  echo "    omarchy-uninstall-project-scratchpads"
+  echo ""
+}
+
+post_upgrade() {
+  post_install
+}
+
+pre_remove() {
+  echo ""
+  echo "==> Tip: run omarchy-uninstall-project-scratchpads first to remove"
+  echo "    keybindings from ~/.config/hypr/bindings.conf"
+  echo ""
+}

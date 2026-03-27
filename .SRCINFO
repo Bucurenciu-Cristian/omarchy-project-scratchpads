@@ -1,0 +1,17 @@
+pkgbase = omarchy-project-scratchpads
+	pkgdesc = Project-specific special workspaces for Hyprland with tmux session sync (omarchy extension)
+	pkgver = 1.0.0
+	pkgrel = 1
+	url = https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads
+	install = omarchy-project-scratchpads.install
+	arch = any
+	license = MIT
+	depends = omarchy
+	depends = tmux
+	depends = jq
+	optdepends = fd: faster directory browsing in project picker
+	optdepends = walker: GUI picker interface (omarchy default launcher)
+	source = omarchy-project-scratchpads-1.0.0.tar.gz::https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads/archive/v1.0.0.tar.gz
+	sha256sums = SKIP
+
+pkgname = omarchy-project-scratchpads
