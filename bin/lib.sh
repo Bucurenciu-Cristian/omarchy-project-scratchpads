@@ -11,10 +11,11 @@ BIN_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p "$STATE_DIR"
 
-# Project lines in config order, comments and blank lines skipped
+# Project lines in config order; comments, blank lines and lines whose name is
+# not letters, numbers, - and _ are skipped (names end up in Hyprland Lua strings)
 project_lines() {
   [[ -f $CONFIG_FILE ]] || return 0
-  grep -v '^[[:space:]]*#' "$CONFIG_FILE" | grep -v '^[[:space:]]*$' || true
+  grep -E '^[A-Za-z0-9_-]+\|' "$CONFIG_FILE" || true
 }
 
 project_line_by_index() { [[ $1 =~ ^[1-9][0-9]*$ ]] && project_lines | sed -n "${1}p"; }

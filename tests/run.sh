@@ -108,14 +108,14 @@ teardown
 
 setup; conf
 "$BIN/omarchy-project-scratchpad" toggle
-check "toggle defaults to first project" logged "hyprctl dispatch togglespecialworkspace project:alpha"
+check "toggle defaults to first project" logged 'hyprctl dispatch hl.dsp.workspace.toggle_special("project:alpha")'
 "$BIN/omarchy-project-select" 2
 check "select sets current project" current beta
 check "select logs a switch" grep -q '|switch|beta|' "$HOME/.local/state/hyprland/project-scratchpads/switch-log"
 "$BIN/omarchy-project-scratchpad" send
-check "send moves window to current project" logged "movetoworkspacesilent special:project:beta"
+check "send moves window to current project" logged 'hl.dsp.window.move({ workspace = "special:project:beta", follow = false })'
 "$BIN/omarchy-project-scratchpad" send-to 3
-check "send-to uses config position" logged "movetoworkspacesilent special:project:gamma"
+check "send-to uses config position" logged 'hl.dsp.window.move({ workspace = "special:project:gamma", follow = false })'
 "$BIN/omarchy-project-select" 9; rc=$?
 check "select rejects missing position" [ $rc -eq 1 ]
 "$BIN/omarchy-project-select" 'x;rm'; rc=$?
@@ -124,6 +124,11 @@ check "dir expands ~" [ "$("$BIN/omarchy-project-scratchpad" dir alpha)" == "$HO
 check "dir falls back to HOME when missing" [ "$("$BIN/omarchy-project-scratchpad" dir gamma)" == "$HOME" ]
 check "session field is used" [ "$("$BIN/omarchy-project-scratchpad" session alpha)" == "alpha-session" ]
 check "list shows all projects" [ "$("$BIN/omarchy-project-scratchpad" list | tr '\n' ' ')" == "alpha beta gamma " ]
+teardown
+
+setup; conf
+printf 'bad")name|x|~/Work/alpha|active\n' >>"$HOME/.config/hypr/projects.conf"
+check "names Hyprland cannot take are ignored" [ "$("$BIN/omarchy-project-scratchpad" list | tr '\n' ' ')" == "alpha beta gamma " ]
 teardown
 
 # --- terminal ---------------------------------------------------------------

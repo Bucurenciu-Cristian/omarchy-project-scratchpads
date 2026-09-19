@@ -26,18 +26,29 @@ require_index() {
   field "$line" 1
 }
 
+# Hyprland's Lua config takes dispatchers as Lua expressions
+dispatch() {
+  if ! hyprctl dispatch "$1" >/dev/null; then
+    notify "Project scratchpad" "Hyprland rejected: $1"
+    exit 1
+  fi
+}
+
+toggle_special() { dispatch "hl.dsp.workspace.toggle_special(\"project:$1\")"; }
+move_to_special() { dispatch "hl.dsp.window.move({ workspace = \"special:project:$1\", follow = false })"; }
+
 case "${1:-toggle}" in
   toggle)
     project=$(require_project) || exit 1
-    hyprctl dispatch togglespecialworkspace "project:$project" >/dev/null
+    toggle_special "$project"
     ;;
   send)
     project=$(require_project) || exit 1
-    hyprctl dispatch movetoworkspacesilent "special:project:$project" >/dev/null
+    move_to_special "$project"
     ;;
   send-to)
     project=$(require_index "${2:-1}") || exit 1
-    hyprctl dispatch movetoworkspacesilent "special:project:$project" >/dev/null
+    move_to_special "$project"
     ;;
   set)
     project=$(require_index "${2:-1}") || exit 1
