@@ -101,7 +101,7 @@ Settings go in a commented block at the end of the file:
 # [settings]
 # focus_mode=false
 # daily_switch_budget=3
-# search_paths=~/Work,~/dev,~/projects,~/code
+# search_paths=~/Projects,~/projects,~/Work,~/dev,~/code
 # search_depth=2
 ```
 
@@ -135,6 +135,16 @@ Your `projects.conf` is kept.
   `~/.config/hypr/bindings.conf`, then install v2 as above.
 - `projects.conf` keeps the same format; the second field now names a herdr session.
 - The Waybar modules are replaced by the bar widget.
+
+## Documentation
+
+Use cases, focus friction, configuration and the command reference live in [`docs/`](docs/)
+as plain Markdown, and build into a [Zensical](https://zensical.org) site:
+
+```bash
+mise run docs:serve   # live preview at http://localhost:8000
+mise run docs         # static site in site/
+```
 
 ## Development
 

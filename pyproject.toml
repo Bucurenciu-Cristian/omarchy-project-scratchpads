@@ -1,0 +1,11 @@
+[project]
+name = "omarchy-project-scratchpads-docs"
+version = "2.0.1"
+description = "Documentation site for Project Scratchpads"
+requires-python = ">=3.10"
+dependencies = [
+  "zensical==0.0.63",
+]
+
+[tool.uv]
+package = false

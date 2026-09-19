@@ -13,5 +13,5 @@
 # [settings]
 # focus_mode=false
 # daily_switch_budget=3
-# search_paths=~/Work,~/dev,~/projects,~/code
+# search_paths=~/Projects,~/projects,~/Work,~/dev,~/code
 # search_depth=2

@@ -1,0 +1,58 @@
+[project]
+site_name = "Project Scratchpads"
+site_description = "One hidden Hyprland workspace per project, for Omarchy 4"
+site_author = "Bucurenciu Cristian"
+repo_url = "https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads"
+repo_name = "omarchy-project-scratchpads"
+copyright = "MIT licensed"
+
+nav = [
+  { Home = "index.md" },
+  { "Getting started" = "getting-started.md" },
+  { "Use cases" = "use-cases.md" },
+  { "Focus friction" = "focus-friction.md" },
+  { "Bar widget" = "bar-widget.md" },
+  { Configuration = "configuration.md" },
+  { Reference = [
+    { Keybindings = "reference/keybindings.md" },
+    { Commands = "reference/commands.md" },
+  ] },
+  { Troubleshooting = "troubleshooting.md" },
+  { "Upgrading from v1" = "upgrading.md" },
+]
+
+[project.theme]
+variant = "classic"
+language = "en"
+features = [
+  "navigation.footer",
+  "navigation.path",
+  "navigation.top",
+  "navigation.sections",
+  "search.highlight",
+  "content.code.copy",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme)"
+toggle.icon = "lucide/sun-moon"
+toggle.name = "Switch color scheme"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+toggle.icon = "lucide/sun"
+toggle.name = "Switch to dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+toggle.icon = "lucide/moon"
+toggle.name = "Switch to light mode"
+
+[project.markdown_extensions]
+admonition = {}
+pymdownx.details = {}
+pymdownx.keys = {}
+pymdownx.superfences = {}
+tables = {}

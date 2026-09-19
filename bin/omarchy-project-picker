@@ -109,7 +109,7 @@ browse_directory() {
   local -a roots=() dirs=()
   local root
   # shellcheck disable=SC2088 # "~" is expanded per entry below
-  IFS=',' read -ra roots <<<"$(setting search_paths "~/Work,~/dev,~/projects,~/code")"
+  IFS=',' read -ra roots <<<"$(setting search_paths "~/Projects,~/projects,~/Work,~/dev,~/code")"
   for root in "${roots[@]}"; do
     root="${root/#\~/$HOME}"
     [[ -d $root ]] || continue

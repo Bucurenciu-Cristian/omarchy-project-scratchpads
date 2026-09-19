@@ -1,0 +1,14 @@
+[tools]
+"aqua:astral-sh/uv" = "latest"
+
+[tasks.test]
+description = "Run the behavior tests"
+run = "tests/run.sh"
+
+[tasks.docs]
+description = "Build the documentation site into site/"
+run = "uv run zensical build --clean"
+
+[tasks."docs:serve"]
+description = "Serve the documentation with live reload"
+run = "uv run zensical serve"
