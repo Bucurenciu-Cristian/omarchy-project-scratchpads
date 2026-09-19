@@ -58,10 +58,12 @@ echo "input: $1" >>"$LOG"
 [[ $answer == __CANCEL__ || -z $answer ]] && exit 1
 echo "$answer"
 EOF
+  # shellcheck disable=SC2016 # the stubs log their own arguments at run time
   for cmd in notify-send setsid uwsm-app xdg-terminal-exec herdr omarchy-launch-editor; do
     printf '#!/bin/bash\necho "%s $*" >>"$LOG"\n' "$cmd" >"$STUBS/$cmd"
   done
-  # setsid/uwsm-app pass through so the terminal command line is visible
+  # setsid logs its whole command line, so the terminal invocation is visible
+  # shellcheck disable=SC2016
   printf '#!/bin/bash\necho "setsid $*" >>"$LOG"\n' >"$STUBS/setsid"
   chmod +x "$STUBS"/*
   export PATH="$STUBS:$PATH" PROJECTS_MENU_SELECT="$STUBS/menu-select" PROJECTS_MENU_INPUT="$STUBS/menu-input"
@@ -159,6 +161,7 @@ check "picker switches to a chosen project" current beta
 teardown
 
 setup; conf
+# shellcheck disable=SC2088 # typed into the picker the way a user would
 answers "New project" "Enter a custom path" "~/Work/New Thing" "new-thing"
 "$BIN/omarchy-project-picker"
 check "new project suggests a clean name" logged "menu: Project name"

@@ -45,7 +45,13 @@ for script in "$PLUGIN_DIR"/bin/omarchy-project-*; do
 done
 echo "Linked omarchy-project-* commands into ~/.local/bin"
 
-omarchy plugin enable "$ID" >/dev/null 2>&1 && echo "Bar widget enabled" || echo "Enable the bar widget with: omarchy plugin enable $ID"
+# Enable picks the center section, so place it on the left explicitly
+if omarchy plugin enable "$ID" >/dev/null 2>&1; then
+  omarchy bar move "$ID" --section left >/dev/null 2>&1 || true
+  echo "Bar widget enabled on the left of the bar"
+else
+  echo "Enable the bar widget with: omarchy plugin enable $ID"
+fi
 
 hyprctl reload >/dev/null
 errors=$(hyprctl configerrors)
