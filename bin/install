@@ -61,13 +61,24 @@ if [[ -n ${errors//[[:space:]]/} && $errors != "no errors" ]]; then
   exit 1
 fi
 
+# Report keys this plugin shares with another binding; both would fire
+clashes=$(omarchy menu keybindings --print 2>/dev/null | awk -F' *→ *' '
+  { keys[$1] = keys[$1] (keys[$1] ? " | " : "") $2; count[$1]++ }
+  END { for (k in count) if (count[k] > 1 && keys[k] ~ /[Pp]roject/) print "  " k ": " keys[k] }' | sort)
+if [[ -n $clashes ]]; then
+  echo "These keys are also bound to something else, so both actions run:"
+  echo "$clashes"
+  echo "Unbind the other one in ~/.config/hypr/bindings.lua, above the Project Scratchpads block:"
+  echo '  hl.unbind("SUPER + SHIFT + P")'
+fi
+
 cat <<'MSG'
 
 Project Scratchpads installed.
   Super+Shift+P        Project picker (create, switch, shelve)
   Super+;              Toggle the current project's scratchpad
   Super+Alt+;          Send the focused window to it
-  Super+Alt+Return     Project terminal (herdr session)
+  Super+Ctrl+Alt+Return  Project terminal (herdr session)
   Ctrl+Alt+1-9         Switch to project N and show its scratchpad
   Ctrl+Alt+Shift+1-9   Send the focused window to project N
 MSG

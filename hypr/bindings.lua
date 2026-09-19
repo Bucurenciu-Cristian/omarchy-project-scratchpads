@@ -9,7 +9,7 @@ end
 o.bind("SUPER + SEMICOLON", "Toggle project scratchpad", cmd("omarchy-project-scratchpad", "toggle"))
 o.bind("SUPER + ALT + SEMICOLON", "Send window to project scratchpad", cmd("omarchy-project-scratchpad", "send"))
 o.bind("SUPER + SHIFT + P", "Project picker", cmd("omarchy-project-picker"))
-o.bind("SUPER + ALT + RETURN", "Project terminal", cmd("omarchy-project-terminal"))
+o.bind("SUPER + CTRL + ALT + RETURN", "Project terminal", cmd("omarchy-project-terminal"))
 
 for i = 1, 9 do
   o.bind("CTRL + ALT + " .. i, "Switch to project " .. i,

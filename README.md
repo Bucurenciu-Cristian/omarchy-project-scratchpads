@@ -27,13 +27,16 @@ The installer:
 - creates `~/.config/hypr/projects.conf` if it is missing
 - links the `omarchy-project-*` commands into `~/.local/bin`
 - enables the bar widget, then reloads Hyprland and checks for config errors
+- lists any key it shares with another binding. Omarchy binds `Super+Shift+P` to
+  Google Photos by default; free it with `hl.unbind("SUPER + SHIFT + P")` above the
+  Project Scratchpads block in `bindings.lua`
 
 Running it again is safe.
 
 ## Quick start
 
 1. `Super+Shift+P` opens the picker. Choose **New project** and pick its folder.
-2. `Super+Alt+Return` opens the project's herdr session in that folder.
+2. `Super+Ctrl+Alt+Return` opens the project's herdr session in that folder.
 3. `Super+Alt+;` sends the focused window into the project's scratchpad.
 4. `Super+;` hides and shows it again.
 
@@ -44,7 +47,7 @@ Running it again is safe.
 | `Super+Shift+P` | Project picker: switch, create, shelve, delete |
 | `Super+;` | Toggle the current project's scratchpad |
 | `Super+Alt+;` | Send the focused window to the current project |
-| `Super+Alt+Return` | Open the current project's herdr session |
+| `Super+Ctrl+Alt+Return` | Open the current project's herdr session (next to Omarchy's `Super+Ctrl+Return` for herdr) |
 | `Ctrl+Alt+1-9` | Switch to project N and show its scratchpad |
 | `Ctrl+Alt+Shift+1-9` | Send the focused window to project N |
 

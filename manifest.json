@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "bucurenciu.project-scratchpads",
   "name": "Project Scratchpads",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "author": "Bucurenciu Cristian",
   "license": "MIT",
   "description": "One hidden Hyprland workspace per project, a herdr session per project, and a picker with focus-mode friction.",
