@@ -1,127 +1,153 @@
 # omarchy-project-scratchpads
 
-Project-specific special workspaces for [Hyprland](https://hyprland.org/) with tmux session sync. An extension for [omarchy](https://github.com/basecamp/omarchy).
+One hidden [Hyprland](https://hyprland.org/) workspace per project, a [herdr](https://herdr.dev)
+session per project, and a picker that makes you say why before you switch.
+An [Omarchy](https://omarchy.org) 4 plugin.
 
-Each project gets its own hidden workspace (Hyprland special workspace) that you can toggle in/out, plus automatic tmux session switching so your terminal context follows your project context.
+Each project gets a special workspace you toggle in and out with `Super+;`. Send the
+windows you need for that project into it, open the project's terminal, and jump
+between projects with `Ctrl+Alt+1-9`. The bar shows which project you are on and how
+many windows it holds.
+
+> v2 targets Omarchy 4 (Lua Hyprland config, Quickshell bar, Omarchy menu).
+> v1 targeted Omarchy 3 with Walker, Waybar and tmux; it is still available at the
+> [`v1.0.0`](https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads/releases/tag/v1.0.0) tag.
 
 ## Install
 
 ```bash
-yay -S omarchy-project-scratchpads
+omarchy plugin add https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads
+~/.config/omarchy/plugins/bucurenciu.project-scratchpads/bin/install
 ```
 
-Then run the setup script to install keybindings and create the config:
+The installer:
 
-```bash
-omarchy-install-project-scratchpads
-```
+- loads the keybindings from `~/.config/hypr/bindings.lua` (one guarded line, so a
+  machine without the plugin still loads its config)
+- creates `~/.config/hypr/projects.conf` if it is missing
+- links the `omarchy-project-*` commands into `~/.local/bin`
+- enables the bar widget, then reloads Hyprland and checks for config errors
+
+Running it again is safe.
 
 ## Quick start
 
-1. Open the project picker: `Super+Shift+P`
-2. Select "New project" and pick a directory
-3. Toggle the project scratchpad: `Super+;`
-4. Send windows to it: `Super+Alt+;`
+1. `Super+Shift+P` opens the picker. Choose **New project** and pick its folder.
+2. `Super+Alt+Return` opens the project's herdr session in that folder.
+3. `Super+Alt+;` sends the focused window into the project's scratchpad.
+4. `Super+;` hides and shows it again.
 
 ## Keybindings
 
-Installed automatically by the setup script into `~/.config/hypr/bindings.conf`:
-
 | Keys | Action |
 |------|--------|
-| `Super+;` | Toggle current project scratchpad |
-| `Super+Alt+;` | Send focused window to project scratchpad |
-| `Super+Shift+P` | Open project picker (create/switch/shelve) |
-| `Ctrl+Alt+1-9` | Quick switch to project N and toggle scratchpad |
-| `Ctrl+Alt+Shift+1-9` | Send focused window to project N |
+| `Super+Shift+P` | Project picker: switch, create, shelve, delete |
+| `Super+;` | Toggle the current project's scratchpad |
+| `Super+Alt+;` | Send the focused window to the current project |
+| `Super+Alt+Return` | Open the current project's herdr session |
+| `Ctrl+Alt+1-9` | Switch to project N and show its scratchpad |
+| `Ctrl+Alt+Shift+1-9` | Send the focused window to project N |
+
+## Bar widget
+
+Shows `󰉋 2: myapp (3)`: position, project, and windows in its scratchpad. The folder
+opens (`󰝰`) while the scratchpad is shown, and `󰈈` marks focus mode.
+
+- **Click** toggles the scratchpad
+- **Right-click** opens the picker
+- **Middle-click** opens the project terminal
+- **Hover** shows active projects, today's switches against your budget, and recent activity
+
+Move it with `omarchy bar move bucurenciu.project-scratchpads --section right`.
+
+## Focus friction
+
+Switching projects has a cost, so the picker adds a little friction:
+
+- **Shelve** projects you are not working on. They leave the main list and
+  `Ctrl+Alt+N` still reaches them.
+- **Unshelving** asks *why*. An empty answer cancels.
+- Past your **daily switch budget**, unshelving asks once more before it goes ahead.
+- **Focus mode** hides shelved projects from the picker entirely.
+
+Every switch, shelve and override is logged in
+`~/.local/state/hyprland/project-scratchpads/switch-log`.
+
+The picker also marks projects that have a dev server running in their folder
+(`bun`, `node`, `pnpm`, `python`, `uv`, `deno`) with `▶ dev server`.
 
 ## Config
 
-Projects are defined in `~/.config/hypr/projects.conf`:
+Projects live in `~/.config/hypr/projects.conf`, one per line, in the order that
+`Ctrl+Alt+1-9` follows:
 
 ```
-# Format: project_name|tmux_session|directory|status
-myapp|myapp|~/dev/myapp|active
-sideproject|sideproject|~/dev/sideproject|pending
+# name|session|directory|status
+myapp|myapp|~/Work/myapp|active
+sideproject|sideproject|~/Work/sideproject|pending
 ```
 
-Fields:
-- **project_name** -- identifier (alphanumeric, dashes, underscores)
-- **tmux_session** -- tmux session name to attach/create
-- **directory** -- project root directory
-- **status** -- `active` (shown in picker) or `pending` (shelved)
+- **name**: letters, numbers, `-` and `_`; its scratchpad is `special:project:<name>`
+- **session**: the herdr session the project terminal opens (created on first use)
+- **directory**: the project folder; with several comma-separated, the first is used
+- **status**: `active`, or `pending` for shelved
 
-### Settings
-
-Add settings in a `[settings]` block at the bottom of `projects.conf`:
+Settings go in a commented block at the end of the file:
 
 ```
 # [settings]
 # focus_mode=false
 # daily_switch_budget=3
+# search_paths=~/Work,~/dev,~/projects,~/code
+# search_depth=2
 ```
 
-- **focus_mode** -- when ON, shelved projects are hidden from the picker
-- **daily_switch_budget** -- number of project switches before a confirmation prompt (default: 3)
+`search_paths` and `search_depth` control which folders **New project** offers.
 
-## Scripts
+Because the file lives in `~/.config/hypr`, a dotfiles setup that syncs that folder
+carries your project list to every machine.
 
-| Script | Purpose |
-|--------|---------|
-| `omarchy-project-scratchpad` | Toggle/send windows to project scratchpads |
-| `omarchy-project-picker` | Walker-based CRUD picker (create/switch/shelve) |
-| `omarchy-project-select` | Quick switch by index (used by Ctrl+Alt+1-9) |
-| `omarchy-project-terminal` | Open terminal in project directory with tmux session |
-| `omarchy-project-indicator` | Waybar module showing current project + window count |
-| `omarchy-project-stats` | Waybar module with focus stats (switches, active count) |
-| `omarchy-install-project-scratchpads` | Setup script (config, keybindings, state dir) |
-| `omarchy-uninstall-project-scratchpads` | Clean uninstaller |
+## Commands
 
-## Waybar integration
-
-### Project indicator
-
-Shows the current project name and window count:
-
-```jsonc
-// ~/.config/waybar/config.jsonc
-"custom/project": {
-  "exec": "omarchy-project-indicator",
-  "return-type": "json",
-  "interval": 1,
-  "on-click": "omarchy-project-scratchpad toggle",
-  "tooltip": true
-}
-```
-
-### Focus stats
-
-Shows active project count and daily switch count:
-
-```jsonc
-"custom/projects": {
-  "exec": "omarchy-project-stats",
-  "interval": 5,
-  "return-type": "json"
-}
-```
+| Command | Purpose |
+|---------|---------|
+| `omarchy-project-picker` | The picker; `omarchy-project-picker focus-toggle` flips focus mode |
+| `omarchy-project-scratchpad` | `toggle`, `send`, `send-to N`, `set N`, `current`, `session`, `dir`, `dirs`, `list` |
+| `omarchy-project-select N` | Switch to project N |
+| `omarchy-project-terminal [name]` | Open a project's herdr session in its folder |
+| `omarchy-project-status` | Current project and focus stats as JSON |
 
 ## Uninstall
 
 ```bash
-omarchy-uninstall-project-scratchpads   # remove keybindings and state
-yay -R omarchy-project-scratchpads      # remove the package
+~/.config/omarchy/plugins/bucurenciu.project-scratchpads/bin/uninstall
+omarchy plugin remove bucurenciu.project-scratchpads
 ```
 
-Your `projects.conf` is preserved -- delete it manually if you want a clean slate.
+Your `projects.conf` is kept.
+
+## Upgrading from v1
+
+- Remove the v1 package (`yay -R omarchy-project-scratchpads`) and its block from
+  `~/.config/hypr/bindings.conf`, then install v2 as above.
+- `projects.conf` keeps the same format; the second field now names a herdr session.
+- The Waybar modules are replaced by the bar widget.
+
+## Development
+
+```bash
+tests/run.sh
+```
+
+runs the scripts against a throwaway `$HOME` with stubbed `hyprctl`, menus and
+terminal.
 
 ## Dependencies
 
-- **omarchy** -- core omarchy utilities
-- **tmux** -- session management
-- **jq** -- JSON parsing for hyprctl output
-- **walker** (optional) -- GUI picker interface
-- **fd** (optional) -- faster directory browsing
+- Omarchy 4 (Hyprland Lua config, `omarchy-menu-select`, Quickshell bar)
+- `jq`
+- `herdr` for project terminals
+- `fd` (optional) for faster folder browsing
 
 ## License
 

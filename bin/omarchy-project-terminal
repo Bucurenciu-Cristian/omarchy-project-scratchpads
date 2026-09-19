@@ -1,16 +1,16 @@
 #!/bin/bash
-# Project Terminal - Opens terminal attached to current project's tmux session
-# Syncs terminal context with project scratchpad system
 
-# Get current project info
-TMUX_SESSION=$(omarchy-project-scratchpad tmux-session)
-PROJECT_DIR=$(omarchy-project-scratchpad dir)
+# Open a terminal on the current project's herdr session, started in the
+# project directory. herdr creates the session the first time and reattaches
+# after that, so the project's panes and agents persist between windows.
+# Usage: omarchy-project-terminal [project]
 
-# Check if tmux session exists
-if tmux has-session -t "$TMUX_SESSION" 2>/dev/null; then
-  # Session exists - attach to it
-  exec omarchy-launch-tui tmux attach-session -t "$TMUX_SESSION"
-else
-  # Session doesn't exist - create it in project directory
-  exec omarchy-launch-tui tmux new-session -s "$TMUX_SESSION" -c "$PROJECT_DIR"
+source "$(dirname -- "$(readlink -f -- "$0")")/lib.sh"
+
+project="${1:-$(current_project)}"
+if [[ -z $project ]]; then
+  notify "Project terminal" "No project configured. Open the picker with Super+Shift+P."
+  exit 1
 fi
+
+exec setsid uwsm-app -- xdg-terminal-exec --dir="$(project_dir "$project")" herdr --session "$(project_session "$project")"

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+# One-time setup after `omarchy plugin add`: keybindings, projects.conf,
+# command symlinks, and the bar widget. Safe to run again.
+
+set -euo pipefail
+
+PLUGIN_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "$0")")/.." && pwd)"
+ID="bucurenciu.project-scratchpads"
+CONFIG_FILE="$HOME/.config/hypr/projects.conf"
+BINDINGS_FILE="$HOME/.config/hypr/bindings.lua"
+MARKER="-- BEGIN Project Scratchpads"
+
+if [[ $PLUGIN_DIR != "$HOME/.config/omarchy/plugins/$ID" ]]; then
+  echo "Install with: omarchy plugin add https://github.com/Bucurenciu-Cristian/omarchy-project-scratchpads"
+  echo "then run: ~/.config/omarchy/plugins/$ID/bin/install"
+  exit 1
+fi
+
+for cmd in hyprctl jq; do
+  command -v "$cmd" >/dev/null || { echo "$cmd is required: omarchy pkg add $cmd"; exit 1; }
+done
+command -v herdr >/dev/null || echo "Note: herdr not found; project terminals need it (omarchy pkg add herdr)."
+
+if [[ ! -f $CONFIG_FILE ]]; then
+  install -D -m 644 "$PLUGIN_DIR/projects.conf.example" "$CONFIG_FILE"
+  echo "Created $CONFIG_FILE"
+fi
+
+if grep -qF "$MARKER" "$BINDINGS_FILE" 2>/dev/null; then
+  echo "Keybindings already loaded from $BINDINGS_FILE"
+else
+  cat >>"$BINDINGS_FILE" <<'LUA'
+
+-- BEGIN Project Scratchpads
+do local f = os.getenv("HOME") .. "/.config/omarchy/plugins/bucurenciu.project-scratchpads/hypr/bindings.lua"; local h = io.open(f, "r"); if h then h:close(); dofile(f) end end
+-- END Project Scratchpads
+LUA
+  echo "Keybindings added to $BINDINGS_FILE"
+fi
+
+mkdir -p "$HOME/.local/bin"
+for script in "$PLUGIN_DIR"/bin/omarchy-project-*; do
+  ln -sfn "$script" "$HOME/.local/bin/$(basename "$script")"
+done
+echo "Linked omarchy-project-* commands into ~/.local/bin"
+
+omarchy plugin enable "$ID" >/dev/null 2>&1 && echo "Bar widget enabled" || echo "Enable the bar widget with: omarchy plugin enable $ID"
+
+hyprctl reload >/dev/null
+errors=$(hyprctl configerrors)
+if [[ -n ${errors//[[:space:]]/} && $errors != "no errors" ]]; then
+  echo "Hyprland reported config errors:"
+  echo "$errors"
+  exit 1
+fi
+
+cat <<'MSG'
+
+Project Scratchpads installed.
+  Super+Shift+P        Project picker (create, switch, shelve)
+  Super+;              Toggle the current project's scratchpad
+  Super+Alt+;          Send the focused window to it
+  Super+Alt+Return     Project terminal (herdr session)
+  Ctrl+Alt+1-9         Switch to project N and show its scratchpad
+  Ctrl+Alt+Shift+1-9   Send the focused window to project N
+MSG

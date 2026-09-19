@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Current project and focus stats as one JSON object, for the bar widget.
+# Usage: omarchy-project-status
+
+source "$(dirname -- "$(readlink -f -- "$0")")/lib.sh"
+
+project=$(current_project)
+index=""
+windows=0
+shown=false
+if [[ -n $project ]]; then
+  index=$(project_index "$project")
+  windows=$(window_count "$project")
+  hyprctl monitors -j 2>/dev/null | jq -e --arg ws "special:project:$project" 'any(.[]; .specialWorkspace.name == $ws)' >/dev/null 2>&1 && shown=true
+fi
+
+total=$(project_lines | wc -l)
+active=$(project_lines | while IFS= read -r line; do [[ $(project_status "$line") == active ]] && echo; done | wc -l)
+focus=false
+focus_mode && focus=true
+
+today=$(date '+%Y-%m-%d')
+recent=$(grep "^$today" "$SWITCH_LOG" 2>/dev/null | tail -8 | awk -F'|' '{ split($1, t, " "); print t[2] " " $2 " " $3 }')
+
+jq -n \
+  --arg project "$project" \
+  --arg index "$index" \
+  --argjson windows "${windows:-0}" \
+  --argjson shown "$shown" \
+  --argjson active "$active" \
+  --argjson total "$total" \
+  --argjson switches "$(today_switch_count)" \
+  --argjson budget "$(switch_budget)" \
+  --argjson focus "$focus" \
+  --arg recent "$recent" \
+  '{project: $project, index: $index, windows: $windows, shown: $shown,
+    active: $active, total: $total, switches: $switches, budget: $budget,
+    focus: $focus, recent: ($recent | split("\n") | map(select(. != "")))}'

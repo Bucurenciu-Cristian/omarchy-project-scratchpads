@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Remove keybindings, command symlinks, the bar widget and state.
+# Keeps ~/.config/hypr/projects.conf. Then: omarchy plugin remove bucurenciu.project-scratchpads
+
+set -euo pipefail
+
+ID="bucurenciu.project-scratchpads"
+BINDINGS_FILE="$HOME/.config/hypr/bindings.lua"
+STATE_DIR="$HOME/.local/state/hyprland/project-scratchpads"
+
+read -rp "Remove Project Scratchpads keybindings, commands and state? [y/N] " confirm
+[[ $confirm =~ ^[yY]$ ]] || { echo "Cancelled."; exit 0; }
+
+if grep -qF -- "-- BEGIN Project Scratchpads" "$BINDINGS_FILE" 2>/dev/null; then
+  tmp=$(mktemp)
+  awk '/^-- BEGIN Project Scratchpads$/ { skip = 1 } !skip { print } /^-- END Project Scratchpads$/ { skip = 0 }' "$BINDINGS_FILE" >"$tmp"
+  cat "$tmp" >"$BINDINGS_FILE"
+  rm -f "$tmp"
+  echo "Removed keybindings from $BINDINGS_FILE"
+fi
+
+for link in "$HOME"/.local/bin/omarchy-project-*; do
+  [[ -L $link && $(readlink "$link") == *"/$ID/"* ]] && rm -f "$link"
+done
+
+omarchy plugin disable "$ID" >/dev/null 2>&1 || true
+rm -rf "$STATE_DIR"
+hyprctl reload >/dev/null
+
+echo "Uninstalled. Your project list is kept at ~/.config/hypr/projects.conf."
+echo "Remove the plugin itself with: omarchy plugin remove $ID"

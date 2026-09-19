@@ -1,14 +1,17 @@
-# Project Scratchpad Configuration
-# Format: project_name|tmux_session|directory|status
-#   - project_name: identifier (alphanumeric, dashes, underscores)
-#   - tmux_session: tmux session name to attach/create
-#   - directory: project root directory
-#   - status: active (shown in picker) or pending (shelved)
+# Project Scratchpads
+# One project per line: name|session|directory|status
+#   name       letters, numbers, - and _ (its scratchpad is special:project:<name>)
+#   session    herdr session opened by the project terminal
+#   directory  project folder; several may be listed, comma-separated, the first is used
+#   status     active (shown in the picker) or pending (shelved)
+# The order sets Ctrl+Alt+1-9.
 #
-# Examples:
-#   myapp|myapp|~/dev/myapp|active
-#   sideproject|sideproject|~/dev/sideproject|pending
+# Example:
+#   myapp|myapp|~/Work/myapp|active
+#   sideproject|sideproject|~/Work/sideproject|pending
 
 # [settings]
 # focus_mode=false
 # daily_switch_budget=3
+# search_paths=~/Work,~/dev,~/projects,~/code
+# search_depth=2
